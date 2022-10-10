@@ -186,6 +186,22 @@ export const useGlobalStore = () => {
         }
         asyncSetCurrentList(id);
     }
+
+    store.createNewList = function () {
+        async function asyncCreateNewList() {
+            let response = await api.createNewPlaylist();
+            const playlist = response.data.playlist
+            if (response.data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                    payload: playlist
+                })
+                store.history.push("/playlist/" + playlist._id)
+            }
+        }
+        asyncCreateNewList();
+    }
+
     store.getPlaylistSize = function() {
         return store.currentList.songs.length;
     }

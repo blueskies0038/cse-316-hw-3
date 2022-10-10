@@ -86,10 +86,47 @@ getPlaylistPairs = async (req, res) => {
         }
     }).catch(err => console.log(err))
 }
+createNewPlaylist = (req, res) => {
+  const playlist = new Playlist({
+      name: "Untitled",
+      songs: [],
+  });
+  console.log("playlist: " + playlist);
+  if (!playlist) {
+      return res.status(400).json({ success: false, error: err })
+  }
+
+  playlist
+      .save()
+      .then(() => {
+          return res.status(201).json({
+              success: true,
+              playlist: playlist,
+              message: 'New Playlist Created!',
+          })
+      })
+      .catch(error => {
+          return res.status(400).json({
+              error,
+              message: 'New Playlist Not Created!',
+          })
+      })
+}
+deletePlaylist = async (req, res) => {
+  await Playlist.remove({ _id: req.params.id }, (err, list) => {
+      if (err) {
+          return res.status(400).json({ success: false, error: err })
+      }
+
+      return res.status(200).json({ success: true, playlist: list })
+  }).catch(err => console.log(err))
+}
 
 module.exports = {
     createPlaylist,
     getPlaylists,
     getPlaylistPairs,
-    getPlaylistById
+    getPlaylistById,
+    createNewPlaylist,
+    deletePlaylist,
 }

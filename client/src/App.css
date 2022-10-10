@@ -63,11 +63,15 @@ body {
 }
 
 #playlist-selector, #playlist-cards {
+  display: grid;
   overflow: scroll;
   grid-column: 1 / 3;
   grid-row: 2 / 3;
-  display:grid;
   background-color: var(--swatch-primary);
+}
+
+#list-selector-list {
+  overflow: scroll;
 }
 
 .playlister-button, .playlister-button-disabled {
