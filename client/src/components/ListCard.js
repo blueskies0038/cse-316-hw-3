@@ -31,6 +31,12 @@ function ListCard(props) {
         toggleEdit();
     }
 
+    function handleDeleteList(event) {
+      event.stopPropagation()
+      const listId = event.target.id.split("-").pop()
+      store.deleteList(listId)
+    }
+
     function toggleEdit() {
         let newActive = !editActive;
         if (newActive) {
@@ -75,6 +81,7 @@ function ListCard(props) {
                 type="button"
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
+                onClick={handleDeleteList}
                 value={"\u2715"}
             />
             <input

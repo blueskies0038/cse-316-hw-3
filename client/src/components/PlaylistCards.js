@@ -12,26 +12,20 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
-    if (store.currentList === null) {
-        return (
-            <div id="playlist-cards"></div>
-        )
-    } else {
-      return (
-          <div id="playlist-cards">
-          {
-              store.currentList.songs.map((song, index) => (
-                  <SongCard
-                      id={'playlist-song-' + (index)}
-                      key={'playlist-song-' + (index)}
-                      index={index}
-                      song={song}
-                  />
-              ))
-          }
-          </div>
-      )
-    }
+    return (
+        <div id="playlist-cards">
+        {
+            store.currentList.songs.map((song, index) => (
+                <SongCard
+                    id={'playlist-song-' + (index)}
+                    key={'playlist-song-' + (index)}
+                    index={index}
+                    song={song}
+                />
+            ))
+        }
+        </div>
+    )
 }
 
 export default PlaylistCards;

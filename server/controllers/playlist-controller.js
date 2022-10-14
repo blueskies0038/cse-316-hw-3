@@ -87,8 +87,9 @@ getPlaylistPairs = async (req, res) => {
     }).catch(err => console.log(err))
 }
 createNewPlaylist = (req, res) => {
+  console.log(req.params.counter)
   const playlist = new Playlist({
-      name: "Untitled",
+      name: "Untitled " + req.params.counter,
       songs: [],
   });
   console.log("playlist: " + playlist);
