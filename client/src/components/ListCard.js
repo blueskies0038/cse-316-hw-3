@@ -33,8 +33,7 @@ function ListCard(props) {
 
     function handleDeleteList(event) {
       event.stopPropagation()
-      const listId = event.target.id.split("-").pop()
-      store.deleteList(listId)
+      store.markListForDeletion(idNamePair._id)
     }
 
     function toggleEdit() {

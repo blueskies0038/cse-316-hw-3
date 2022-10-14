@@ -18,6 +18,7 @@ export const GlobalStoreActionType = {
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    SET_LIST_FOR_DELETION: "SET_LIST_FOR_DELETION",
     DELETE_LIST: "DELETE_LIST",
 }
 
@@ -32,7 +33,8 @@ export const useGlobalStore = () => {
         idNamePairs: [],
         currentList: null,
         newListCounter: 0,
-        listNameActive: false
+        listNameActive: false,
+        listMarkedForDeletion: null,
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -46,7 +48,8 @@ export const useGlobalStore = () => {
                     idNamePairs: payload.idNamePairs,
                     currentList: payload.playlist,
                     newListCounter: store.newListCounter,
-                    listNameActive: false
+                    listNameActive: false,
+                    listMarkedForDeletion: null
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -55,7 +58,8 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: null,
                     newListCounter: store.newListCounter,
-                    listNameActive: false
+                    listNameActive: false,
+                    listMarkedForDeletion: null
                 })
             }
             // CREATE A NEW LIST
@@ -64,7 +68,8 @@ export const useGlobalStore = () => {
                     idNamePairs: payload,
                     currentList: store.currentList,
                     newListCounter: (store.newListCounter++),
-                    listNameActive: false
+                    listNameActive: false,
+                    listMarkedForDeletion: null
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -73,7 +78,8 @@ export const useGlobalStore = () => {
                     idNamePairs: payload,
                     currentList: null,
                     newListCounter: store.newListCounter,
-                    listNameActive: false
+                    listNameActive: false,
+                    listMarkedForDeletion: null
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -82,7 +88,8 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: null,
                     newListCounter: store.newListCounter,
-                    listNameActive: false
+                    listNameActive: false,
+                    listMarkedForDeletion: null
                 });
             }
             // UPDATE A LIST
@@ -91,7 +98,8 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
                     newListCounter: store.newListCounter,
-                    listNameActive: false
+                    listNameActive: false,
+                    listMarkedForDeletion: null
                 });
             }
             // START EDITING A LIST NAME
@@ -100,15 +108,26 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
                     newListCounter: store.newListCounter,
-                    listNameActive: true
+                    listNameActive: true,
+                    listMarkedForDeletion: null
                 });
+            }
+            case GlobalStoreActionType.SET_LIST_FOR_DELETION: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listMarkedForDeletion: payload
+                })
             }
             case GlobalStoreActionType.DELETE_LIST: {
                 return setStore({
-                  idNamePairs: store.idNamePairs,
-                  currentList: null,
+                  idNamePairs: payload,
+                  currentList: store.currentList,
                   newListCounter: store.newListCounter,
-                  listNameActive: false
+                  listNameActive: false,
+                  listMarkedForDeletion: null
                 })
             }
             default:
@@ -217,17 +236,46 @@ export const useGlobalStore = () => {
         asyncCreateNewList();
     }
 
-    store.deleteList = function (id) {
-        async function asyncDeleteList(id) {
-            let response = await api.deletePlaylist(id)
+    store.markListForDeletion = function (id) {
+        async function asyncMark(id) {
+            let response = await api.getPlaylistById(id);
             if (response.data.success) {
+                let playlist = response.data.playlist;
                 storeReducer({
-                    type: GlobalStoreActionType.DELETE_LIST,
-                    payload: {}
-                })
+                    type: GlobalStoreActionType.SET_LIST_FOR_DELETION,
+                    payload: playlist
+                });
+                store.showDeleteListModal()
             }
         }
-        asyncDeleteList(id)
+        asyncMark(id);
+    }
+    store.deleteList = function () {
+        async function asyncDeleteList() {
+            let response = await api.deletePlaylist(store.listMarkedForDeletion._id)
+            if (response.data.success) {
+                response = await api.getPlaylistPairs()
+                if (response.data.success) {
+                  const pairs = response.data.idNamePairs
+                  storeReducer({
+                      type: GlobalStoreActionType.DELETE_LIST,
+                      payload: pairs
+                  })
+                }
+            }
+            store.hideDeleteListModal()
+        }
+        asyncDeleteList()
+    }
+
+    store.showDeleteListModal = function () {
+        let modal = document.getElementById("delete-modal");
+        modal.classList.add("is-visible");
+    }
+
+    store.hideDeleteListModal = function () {
+        let modal = document.getElementById("delete-modal");
+        modal.classList.remove("is-visible");
     }
 
     store.getPlaylistSize = function() {
