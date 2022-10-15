@@ -1,6 +1,7 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import MoveSong_Transaction from '../transactions/MoveSong_Transaction'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -20,6 +21,7 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     SET_LIST_FOR_DELETION: "SET_LIST_FOR_DELETION",
     DELETE_LIST: "DELETE_LIST",
+    ADD_NEW_SONG: "ADD_NEW_SONG",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -130,6 +132,15 @@ export const useGlobalStore = () => {
                   listMarkedForDeletion: null
                 })
             }
+            case GlobalStoreActionType.ADD_NEW_SONG: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listMarkedForDeletion: null
+                })
+            }
             default:
                 return store;
         }
@@ -215,6 +226,19 @@ export const useGlobalStore = () => {
         asyncSetCurrentList(id);
     }
 
+    store.updateCurrentList = function () {
+        async function asyncUpdateCurrentList() {
+            const response = await api.updateCurrentListById(store.currentList._id, store.currentList);
+            if (response.data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_LIST,
+                    payload: store.currentList
+                });
+            }
+        }
+        asyncUpdateCurrentList();
+    }
+
     store.createNewList = function () {
         async function asyncCreateNewList() {
             const counter = store.newListCounter
@@ -276,6 +300,46 @@ export const useGlobalStore = () => {
     store.hideDeleteListModal = function () {
         let modal = document.getElementById("delete-modal");
         modal.classList.remove("is-visible");
+    }
+    
+    store.addNewSong = function () {
+      async function asyncAddSong() {
+          let response = await api.addNewSong(store.currentList._id)
+          if (response.data.success) {
+              const playlist = response.data.playlist
+              storeReducer({
+                  type: GlobalStoreActionType.ADD_NEW_SONG,
+                  payload: playlist
+              })
+          }
+      }
+      asyncAddSong()
+    }
+
+    store.addMoveSongTransaction = function (start, end) {
+        let transaction = new MoveSong_Transaction(store, start, end);
+        tps.addTransaction(transaction);
+    }
+
+    store.moveSong = function (start, end) {
+        start -= 1;
+        end -= 1;
+        if (start < end) {
+            let temp = store.currentList.songs[start];
+            for (let i = start; i < end; i++) {
+                store.currentList.songs[i] = store.currentList.songs[i + 1];
+            }
+            store.currentList.songs[end] = temp;
+        }
+        else if (start > end) {
+            let temp = store.currentList.songs[start];
+            for (let i = start; i > end; i--) {
+                store.currentList.songs[i] = store.currentList.songs[i - 1];
+            }
+            store.currentList.songs[end] = temp;
+        }
+
+        store.updateCurrentList()
     }
 
     store.getPlaylistSize = function() {

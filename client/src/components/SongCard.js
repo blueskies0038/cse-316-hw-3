@@ -3,6 +3,8 @@ import { GlobalStoreContext } from '../store'
 
 function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    const [draggedTo, setDraggedTo] = useState(0);
+    const [editActive, setEditActive] = useState(false);
 
     const { song, index } = props;
     let cardClass = "list-card unselected-list-card";
@@ -16,7 +18,8 @@ function SongCard(props) {
             <a
                 id={'song-' + index + '-link'}
                 className="song-link"
-                href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
+                href={"https://www.youtube.com/watch?v=" + song.youTubeId}
+                target="_blank" rel="noreferrer">
                 {song.title} by {song.artist}
             </a>
             <input

@@ -122,6 +122,70 @@ deletePlaylist = async (req, res) => {
       return res.status(200).json({ success: true, playlist: list })
   }).catch(err => console.log(err))
 }
+updatePlaylist = async (req, res) => {
+    const body = req.body
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'Updated Information must be provided',
+        })
+    }
+    await Playlist.findOne({ _id: req.params.id }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+        }
+        list.name = body.name
+        list.songs = body.songs
+        list
+          .save()
+          .then(() => {
+              return res.status(201).json({
+                  success: true,
+                  playlist: list,
+                  message: 'Playlist Updated!',
+              })
+          })
+          .catch(error => {
+              return res.status(400).json({
+                  success: false,
+                  error,
+                  message: 'Playlist Not Updated!',
+              })
+          })
+    })
+}
+addSong = async (req, res) => {
+    const newSong = {
+        title: "Untitled",
+        artist: "Unknown",
+        youTubeId: "dQw4w9WgXcQ"
+    }
+    await Playlist.findOne({ _id: req.params.id }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+        }
+        console.log(list)
+        const songs = list.songs
+        songs.push(newSong)
+        list.songs = songs
+        list
+          .save()
+          .then(() => {
+              return res.status(201).json({
+                  success: true,
+                  playlist: list,
+                  message: 'Playlist Updated!',
+              })
+          })
+          .catch(error => {
+              return res.status(400).json({
+                  success: false,
+                  error,
+                  message: 'Playlist Not Updated!',
+              })
+          })
+    })
+}
 
 module.exports = {
     createPlaylist,
@@ -130,4 +194,6 @@ module.exports = {
     getPlaylistById,
     createNewPlaylist,
     deletePlaylist,
+    updatePlaylist,
+    addSong,
 }
