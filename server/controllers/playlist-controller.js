@@ -239,6 +239,41 @@ updateSong = async (req, res) => {
           })
     })
 }
+deleteSong = async (req, res) => {
+    const index = req.params.songIdx
+    await Playlist.findOne({ _id: req.params.playlistId }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+        }
+        const songs = list.songs
+        const deleteSong = songs[index]
+        if (!deleteSong) {
+          return res.status(400).json({
+              success: false,
+              error,
+              message: 'Song Not Found!',
+          })
+        }
+        songs.splice(index, 1)
+        list.songs = songs
+        list
+          .save()
+          .then(() => {
+              return res.status(201).json({
+                  success: true,
+                  playlist: list,
+                  message: 'Song Deleted!',
+              })
+          })
+          .catch(error => {
+              return res.status(400).json({
+                  success: false,
+                  error,
+                  message: 'Song Not Deleted!',
+              })
+          })
+    })
+}
 
 module.exports = {
     createPlaylist,
@@ -251,4 +286,5 @@ module.exports = {
     addSong,
     getSong,
     updateSong,
+    deleteSong,
 }

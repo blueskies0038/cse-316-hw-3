@@ -54,6 +54,11 @@ function SongCard(props) {
           store.markSongForEdit(index)
         }
     }
+
+    function handleDeleteSong(event) {
+        store.markSongForDeletion(index)
+    }
+
     return (
         <div
             key={index}
@@ -80,6 +85,7 @@ function SongCard(props) {
                 id={"remove-song-" + index}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick={handleDeleteSong}
             />
         </div>
     );
