@@ -5,12 +5,11 @@ function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [draggedTo, setDraggedTo] = useState(0);
     const [isDragging, setIsDragging] = useState(false)
-    const [editActive, setEditActive] = useState(false);
 
     const { song, index } = props;
     let cardClass = "list-card unselected-list-card";
     if (draggedTo) {
-        cardClass = "playlister-song-dragged-to";
+        cardClass = "-song-dragged-to";
     }
 
     function handleDragStart(event) {
@@ -52,7 +51,7 @@ function SongCard(props) {
     function handleClick(event) {
         if (event.detail === 2) {
           event.stopPropagation();
-          console.log("Double Click")
+          store.markSongForEdit(index)
         }
     }
     return (

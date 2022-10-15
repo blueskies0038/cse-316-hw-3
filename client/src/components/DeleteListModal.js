@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { GlobalStoreContext } from '../store'
 
-const DeleteModal = () => {
+const DeleteListModal = () => {
     const { store } = useContext(GlobalStoreContext);
     
     function handleDeleteList(event) {
@@ -13,22 +13,22 @@ const DeleteModal = () => {
     return (
         <div
             className="modal"
-            id="delete-modal"
+            id="delete-list-modal"
             data-animation="slideInOutLeft">
             <div className="modal-dialog">
-                <header className="dialog-header">
+                <div className="dialog-header">
                     Delete the {(store.listMarkedForDeletion != null) ? store.listMarkedForDeletion.name : ""} Playlist?
-                </header>
+                </div>
                 <div id="confirm-cancel-container">
                     <button
-                        id="dialog-yes-button"
+                        id="confirm-button"
                         className="modal-button"
                         onClick={handleDeleteList}
                     >
                       Confirm
                     </button>
                     <button
-                        id="dialog-no-button"
+                        id="cancel-button"
                         className="modal-button"
                         onClick={handleCloseModal}
                     >
@@ -40,4 +40,4 @@ const DeleteModal = () => {
     );
 }
 
-export default DeleteModal;
+export default DeleteListModal;

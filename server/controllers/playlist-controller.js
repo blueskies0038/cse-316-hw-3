@@ -164,7 +164,6 @@ addSong = async (req, res) => {
         if (err) {
             return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
         }
-        console.log(list)
         const songs = list.songs
         songs.push(newSong)
         list.songs = songs
@@ -186,6 +185,60 @@ addSong = async (req, res) => {
           })
     })
 }
+getSong = async (req, res) => {
+    await Playlist.findOne({ _id: req.params.playlistId }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+        }
+        const song = list.songs[req.params.songIdx]
+        if (!song) {
+          return res.status(400).json({
+              success: false,
+              error,
+              message: 'Song Not Found!',
+          })
+        }
+        return res.status(201).json({
+            success: true,
+            song,
+            message: 'Playlist Updated!',
+        }) 
+    })
+}
+updateSong = async (req, res) => {
+    const newSong = req.body
+    const index = req.params.songIdx
+    await Playlist.findOne({ _id: req.params.playlistId }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+        }
+        const song = list.songs[index]
+        if (!song) {
+          return res.status(400).json({
+              success: false,
+              error,
+              message: 'Song Not Found!',
+          })
+        }
+        list.songs[index] = newSong
+        list
+          .save()
+          .then(() => {
+              return res.status(201).json({
+                  success: true,
+                  playlist: list,
+                  message: 'Song Updated!',
+              })
+          })
+          .catch(error => {
+              return res.status(400).json({
+                  success: false,
+                  error,
+                  message: 'Song Not Updated!',
+              })
+          })
+    })
+}
 
 module.exports = {
     createPlaylist,
@@ -196,4 +249,6 @@ module.exports = {
     deletePlaylist,
     updatePlaylist,
     addSong,
+    getSong,
+    updateSong,
 }
