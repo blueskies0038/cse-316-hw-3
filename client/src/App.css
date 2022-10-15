@@ -93,6 +93,19 @@ body {
   cursor: not-allowed;
 }
 
+.playlister-song, .playlister-song-dragged-to { 
+  font-size: 32pt;
+  background-color: var(--swatch-complement);
+  margin: 10px;
+  padding: 20px;
+  border-radius: 25px;
+}
+
+.playlister-song:hover, .playlister-song-dragged-to:hover {
+  background-color: var(--swatch-contrast);
+  color: white;
+}
+
 #playlister-statusbar {
   position: absolute;
   left: 0%;

@@ -322,22 +322,25 @@ export const useGlobalStore = () => {
     }
 
     store.moveSong = function (start, end) {
-        start -= 1;
-        end -= 1;
+        start = Number(start)
+        end = Number(end)
+        const list = store.currentList
         if (start < end) {
-            let temp = store.currentList.songs[start];
+            let temp = list.songs[start];
             for (let i = start; i < end; i++) {
-                store.currentList.songs[i] = store.currentList.songs[i + 1];
+                list.songs[i] = list.songs[i + 1];
             }
-            store.currentList.songs[end] = temp;
+            list.songs[end] = temp;
         }
         else if (start > end) {
-            let temp = store.currentList.songs[start];
+            let temp = list.songs[start];
             for (let i = start; i > end; i--) {
-                store.currentList.songs[i] = store.currentList.songs[i - 1];
+                list.songs[i] = list.songs[i - 1];
             }
-            store.currentList.songs[end] = temp;
+            list.songs[end] = temp;
         }
+
+        store.currentList = list
 
         store.updateCurrentList()
     }

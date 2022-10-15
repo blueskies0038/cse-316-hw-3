@@ -1,6 +1,6 @@
 import jsTPS_Transaction from "../common/jsTPS.js"
 
-export default class MoveItem_Transaction extends jsTPS_Transaction {
+export default class MoveSong_Transaction extends jsTPS_Transaction {
     constructor(initStore, initOldIndex, initNewIndex) {
         super();
         this.store = initStore;
@@ -9,10 +9,10 @@ export default class MoveItem_Transaction extends jsTPS_Transaction {
     }
 
     doTransaction() {
-        this.store.moveItem(this.oldItemIndex, this.newItemIndex);
+        this.store.moveSong(this.oldItemIndex, this.newItemIndex);
     }
     
     undoTransaction() {
-        this.store.moveItem(this.newItemIndex, this.oldItemIndex);
+        this.store.moveSong(this.newItemIndex, this.oldItemIndex);
     }
 }
