@@ -10,10 +10,10 @@ import jsTPS from '../common/jsTPS';
 */
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
-    const [canAddSong, setCanAddSong] = useState(true)
-    const [canUndo, setCanUndo] = useState(true)
-    const [canRedo, setCanRedo] = useState(true)
-    const [canClose, setCanClose] = useState(true)
+    const [canAddSong, setCanAddSong] = useState(false)
+    const [canUndo, setCanUndo] = useState(false)
+    const [canRedo, setCanRedo] = useState(false)
+    const [canClose, setCanClose] = useState(false)
     const history = useHistory();
 
     let enabledButtonClass = "playlister-button";
@@ -33,10 +33,10 @@ function EditToolbar() {
     }
     useEffect(() => {
       setCanAddSong(store.getCanAddSong)
-      setCanUndo(store.getCanUndo)
-      setCanRedo(store.getCanRedo)
+      setCanUndo(canAddSong && store.getCanUndo)
+      setCanRedo(canAddSong && store.getCanRedo)
       setCanClose(store.getCanClose)
-    }, [store])
+    }, [store, canAddSong])
 
     return (
         <span id="edit-toolbar">
