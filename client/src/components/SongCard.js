@@ -36,11 +36,9 @@ function SongCard(props) {
         event.preventDefault();
         let target = event.target;
         let targetId = target.id;
-        let index = target.id.indexOf("-")
-        targetId = targetId.substring(index + 1, index + 2);
+        targetId = targetId.split("-")[1]
         let sourceId = event.dataTransfer.getData("song");
-        index = sourceId.indexOf("-")
-        sourceId = sourceId.substring(index + 1, index + 2);
+        sourceId = sourceId.split("-")[1]
         
         setIsDragging(false)
         setDraggedTo(false)

@@ -416,7 +416,6 @@ export const useGlobalStore = () => {
     store.moveSong = function (start, end) {
         start = Number(start)
         end = Number(end)
-        console.log(start + ", " + end)
         const list = store.currentList
         if (start < end) {
             let temp = list.songs[start];
