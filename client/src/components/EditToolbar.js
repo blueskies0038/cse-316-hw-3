@@ -1,6 +1,7 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import { useHistory } from 'react-router-dom'
+import jsTPS from '../common/jsTPS';
 /*
     This toolbar is a functional React component that
     manages the undo/redo/close buttons.
@@ -9,6 +10,10 @@ import { useHistory } from 'react-router-dom'
 */
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
+    const [canAddSong, setCanAddSong] = useState(true)
+    const [canUndo, setCanUndo] = useState(true)
+    const [canRedo, setCanRedo] = useState(true)
+    const [canClose, setCanClose] = useState(true)
     const history = useHistory();
 
     let enabledButtonClass = "playlister-button";
@@ -26,16 +31,19 @@ function EditToolbar() {
     function handleAddSong() {
         store.addAddSongTransaction()
     }
-    let editStatus = false;
-    if (store.isListNameEditActive) {
-        editStatus = true;
-    }
+    useEffect(() => {
+      setCanAddSong(store.getCanAddSong)
+      setCanUndo(store.getCanUndo)
+      setCanRedo(store.getCanRedo)
+      setCanClose(store.getCanClose)
+    }, [store])
+
     return (
         <span id="edit-toolbar">
             <input
                 type="button"
                 id='add-song-button'
-                disabled={editStatus}
+                disabled={!canAddSong}
                 value="+"
                 className={enabledButtonClass}
                 onClick={handleAddSong}
@@ -43,7 +51,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='undo-button'
-                disabled={editStatus}
+                disabled={!canUndo}
                 value="⟲"
                 className={enabledButtonClass}
                 onClick={handleUndo}
@@ -51,7 +59,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='redo-button'
-                disabled={editStatus}
+                disabled={!canRedo}
                 value="⟳"
                 className={enabledButtonClass}
                 onClick={handleRedo}
@@ -59,7 +67,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='close-button'
-                disabled={editStatus}
+                disabled={!canClose}
                 value="&#x2715;"
                 className={enabledButtonClass}
                 onClick={handleClose}

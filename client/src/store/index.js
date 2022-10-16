@@ -565,6 +565,22 @@ export const useGlobalStore = () => {
         tps.doTransaction();
     }
 
+    store.getCanAddSong = function() {
+        return store.currentList !== null
+    }
+
+    store.getCanClose = function() {
+        return store.currentList !== null
+    }
+
+    store.getCanUndo = function() {
+        return tps.hasTransactionToUndo()
+    }
+
+    store.getCanRedo = function() {
+        return tps.hasTransactionToRedo()
+    }
+
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setlistNameActive = function () {
         storeReducer({
