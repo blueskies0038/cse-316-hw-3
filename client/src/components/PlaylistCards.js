@@ -26,8 +26,8 @@ function PlaylistCards() {
                 />
             ))
         }
-        <EditSongModal />
-        <DeleteSongModal />
+          <EditSongModal />
+          <DeleteSongModal />
         </div>
     )
 }
