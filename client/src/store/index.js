@@ -2,6 +2,9 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveSong_Transaction from '../transactions/MoveSong_Transaction'
+import AddSong_Transaction from '../transactions/AddSong_Transaction';
+import DeleteSong_Transaction from '../transactions/DeleteSong_Transaction';
+import EditSong_Transaction from '../transactions/EditSong_Transaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -225,10 +228,10 @@ export const useGlobalStore = () => {
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
-                let playlist = response.data.playist;
+                let playlist = response.data.playlist;
                 playlist.name = newName;
                 async function updateList(playlist) {
-                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    response = await api.updateCurrentListById(playlist._id, playlist);
                     if (response.data.success) {
                         async function getListPairs(playlist) {
                             response = await api.getPlaylistPairs();
@@ -371,6 +374,11 @@ export const useGlobalStore = () => {
         let modal = document.getElementById("delete-list-modal");
         modal.classList.remove("is-visible");
     }
+
+    store.addAddSongTransaction = function () {
+        let transaction = new AddSong_Transaction(store)
+        tps.addTransaction(transaction)
+    }
     
     store.addNewSong = function () {
       async function asyncAddSong() {
@@ -386,6 +394,20 @@ export const useGlobalStore = () => {
       asyncAddSong()
     }
 
+    store.undoAddSong = function () {
+        async function asyncUndo() {
+            let response = await api.deleteSong(store.currentList._id, store.currentList.songs.length)
+            if (response.data.success) {
+                const playlist = response.data.playlist
+                storeReducer({
+                    type: GlobalStoreActionType.DELETE_SONG,
+                    payload: playlist
+                });
+            }
+        }
+        asyncUndo()
+    }
+
     store.addMoveSongTransaction = function (start, end) {
         let transaction = new MoveSong_Transaction(store, start, end);
         tps.addTransaction(transaction);
@@ -394,6 +416,7 @@ export const useGlobalStore = () => {
     store.moveSong = function (start, end) {
         start = Number(start)
         end = Number(end)
+        console.log(start + ", " + end)
         const list = store.currentList
         if (start < end) {
             let temp = list.songs[start];
@@ -417,7 +440,6 @@ export const useGlobalStore = () => {
 
     store.markSongForEdit = function (index) {
         async function asyncMark(index) {
-          console.log(index)
             let response = await api.getSongById(store.currentList._id, index);
             if (response.data.success) {
                 storeReducer({
@@ -430,19 +452,35 @@ export const useGlobalStore = () => {
         asyncMark(index);
     }
     store.editSong = function (newSong) {
-        async function asyncEditSong() {
-            let response = await api.updateSongById(store.currentList._id, store.songMarkedForEdit, newSong)
-            if (response.data.success) {
-                const playlist = response.data.playlist
-                storeReducer({
-                    type: GlobalStoreActionType.EDIT_SONG,
-                    payload: playlist
-                })
-            }
-            store.hideEditSongModal()
-        }
-        asyncEditSong()
-    }
+      async function asyncEditSong() {
+          let response = await api.updateSongById(store.currentList._id, store.songMarkedForEdit, newSong)
+          if (response.data.success) {
+              const playlist = response.data.playlist
+              storeReducer({
+                  type: GlobalStoreActionType.EDIT_SONG,
+                  payload: playlist
+              })
+          }
+          store.hideEditSongModal()
+      }
+      asyncEditSong()
+  }
+
+  store.undoEditSong = function (songIdx, oldSong) {
+    console.log(songIdx)
+      async function asyncUndo() {
+        console.log(oldSong)
+          let response = await api.updateSongById(store.currentList._id, songIdx, oldSong)
+          if (response.data.success) {
+              const playlist = response.data.playlist
+              storeReducer({
+                  type: GlobalStoreActionType.EDIT_SONG,
+                  payload: playlist
+              })
+          }
+      }
+      asyncUndo()
+  }
 
     store.showEditSongModal = function () {
         let modal = document.getElementById("edit-song-modal");
@@ -452,6 +490,11 @@ export const useGlobalStore = () => {
     store.hideEditSongModal = function () {
         let modal = document.getElementById("edit-song-modal");
         modal.classList.remove("is-visible");
+    }
+
+    store.addEditSongTransaction = function(newSong) {
+        let transaction = new EditSong_Transaction(store, store.songMarkedForEdit, store.currentList.songs[store.songMarkedForEdit], newSong)
+        tps.addTransaction(transaction);
     }
 
     store.markSongForDeletion = function (index) {
@@ -467,6 +510,7 @@ export const useGlobalStore = () => {
         }
         asyncMark(index);
     }
+
     store.deleteSong = function () {
         async function asyncDeleteSong() {
             let response = await api.deleteSong(store.currentList._id, store.songMarkedForDeletion)
@@ -490,6 +534,25 @@ export const useGlobalStore = () => {
     store.hideDeleteSongModal = function () {
         let modal = document.getElementById("delete-song-modal");
         modal.classList.remove("is-visible");
+    }
+
+    store.addDeleteSongTransaction = function () {
+      let transaction = new DeleteSong_Transaction(store, store.songMarkedForDeletion, store.currentList.songs[store.songMarkedForDeletion])
+      tps.addTransaction(transaction)
+    }
+
+    store.undoDeleteSong = function (id, deletedSong) {
+        async function asyncUndoDelete() {
+            let response = await api.undoDeleteSong(store.currentList._id, id, deletedSong)
+            if (response.data.success) {
+              const playlist = response.data.playlist
+              storeReducer({
+                  type: GlobalStoreActionType.EDIT_SONG,
+                  payload: playlist
+              })
+            }
+        }
+        asyncUndoDelete()
     }
 
     store.getPlaylistSize = function() {

@@ -15,7 +15,7 @@ const EditSongModal = () => {
           artist,
           youTubeId,
       }
-      store.editSong(newSong)
+      store.addEditSongTransaction(newSong)
   }
 
   const handleTitleChange = (event) => {

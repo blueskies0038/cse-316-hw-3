@@ -31,6 +31,7 @@ export const addNewSong = (id) => api.put(`/playlist/${id}/song`)
 export const getSongById = (playlistId, songIdx) => api.get(`/playlist/${playlistId}/song/${songIdx}`)
 export const updateSongById = (playlistId, songIdx, song) => api.put(`/playlist/${playlistId}/song/${songIdx}`, song)
 export const deleteSong = (playlistId, songIdx) => api.delete(`/playlist/${playlistId}/song/${songIdx}`)
+export const undoDeleteSong = (playlistId, songIdx, song) => api.post(`/playlist/${playlistId}/song/${songIdx}/undo-delete`, song)
 
 const apis = {
     getAllPlaylists,
@@ -43,6 +44,7 @@ const apis = {
     getSongById,
     updateSongById,
     deleteSong,
+    undoDeleteSong,
 }
 
 export default apis

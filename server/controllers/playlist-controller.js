@@ -227,6 +227,7 @@ updateSong = async (req, res) => {
               return res.status(201).json({
                   success: true,
                   playlist: list,
+                  song,
                   message: 'Song Updated!',
               })
           })
@@ -262,6 +263,7 @@ deleteSong = async (req, res) => {
               return res.status(201).json({
                   success: true,
                   playlist: list,
+                  song: deleteSong,
                   message: 'Song Deleted!',
               })
           })
@@ -270,6 +272,33 @@ deleteSong = async (req, res) => {
                   success: false,
                   error,
                   message: 'Song Not Deleted!',
+              })
+          })
+    })
+}
+undoDeleteSong = async (req, res) => {
+    const deletedSong = req.body
+    await Playlist.findOne({ _id: req.params.playlistId }, (err, list) => {
+      if (err) {
+          return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+      }
+      const songs = list.songs
+      songs.splice(req.params.songIdx, 0, deletedSong)
+      list.songs = songs
+      list
+          .save()
+          .then(() => {
+              return res.status(201).json({
+                  success: true,
+                  playlist: list,
+                  message: 'Song Deletion Undone!',
+              })
+          })
+          .catch(error => {
+              return res.status(400).json({
+                  success: false,
+                  error,
+                  message: 'Song Deletion not Undone!',
               })
           })
     })
@@ -287,4 +316,5 @@ module.exports = {
     getSong,
     updateSong,
     deleteSong,
+    undoDeleteSong,
 }

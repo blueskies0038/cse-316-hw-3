@@ -9,7 +9,7 @@ const DeleteSongModal = () => {
   const index = store.songMarkedForDeletion
 
   function handleDeleteSong(event) {
-      store.deleteSong();
+      store.addDeleteSongTransaction();
   }
   function handleCloseModal(event) {
       store.hideDeleteSongModal();
