@@ -9,7 +9,7 @@ function SongCard(props) {
     const { song, index } = props;
     let cardClass = "list-card unselected-list-card";
     if (draggedTo) {
-        cardClass = "-song-dragged-to";
+        cardClass = "list-card playlist-song-dragged-to";
     }
 
     function handleDragStart(event) {
