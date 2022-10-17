@@ -44,7 +44,7 @@ const EditSongModal = () => {
   }
 
   useEffect(() => {
-    if (index) {
+    if (index != null) {
         const song = store.currentList.songs[index]
         setTitle(song.title)
         setArtist(song.artist)
@@ -62,9 +62,9 @@ const EditSongModal = () => {
                   Edit Song
               </div>
               <div className="modal-center" id="edit-song-form" onKeyDown={handleKeyDown}>
-                Title:<input type="text" id="card-text-input-title" onChange={handleTitleChange} defaultValue={title} />
-                Artist:<input type="text" id="card-text-input-artist" onChange={handleArtistChange} defaultValue={artist} />
-                You Tube Id:<input type="text" id="card-text-input-youtube-id" onChange={handleYouTubeIdChange} defaultValue={youTubeId} />
+                Title:<input type="text" id="card-text-input-title" onChange={handleTitleChange} value={title} />
+                Artist:<input type="text" id="card-text-input-artist" onChange={handleArtistChange} value={artist} />
+                You Tube Id:<input type="text" id="card-text-input-youtube-id" onChange={handleYouTubeIdChange} value={youTubeId} />
               </div>
               <div id="confirm-cancel-container">
                   <input type="button" 

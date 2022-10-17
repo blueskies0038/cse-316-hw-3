@@ -261,6 +261,7 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+        tps.clearAllTransactions()
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -466,7 +467,6 @@ export const useGlobalStore = () => {
   }
 
   store.undoEditSong = function (songIdx, oldSong) {
-    console.log(songIdx)
       async function asyncUndo() {
         console.log(oldSong)
           let response = await api.updateSongById(store.currentList._id, songIdx, oldSong)
