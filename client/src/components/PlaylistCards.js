@@ -14,6 +14,16 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
+    function handleKeyPress (event) {
+        if (event.keyCode === 90 && event.ctrlKey) {
+          store.undo()
+        } else if (event.keyCode === 89 && event.ctrlKey) {
+          store.redo()
+        }
+    }
+
+    document.onkeydown = handleKeyPress
+
     return (
         <div id="playlist-cards">
         {
